@@ -22,6 +22,7 @@ public partial class GameController : SystemBase
         Instance = this;
         UnityEngine.Physics.autoSimulation = false;
         UnityEngine.Physics2D.simulationMode = SimulationMode2D.Script;
+        World.GetExistingSystem<Unity.Transforms.TransformSystemGroup>().Enabled = false;
 
         matPropBlock = new MaterialPropertyBlock();
 

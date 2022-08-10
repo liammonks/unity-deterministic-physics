@@ -271,7 +271,7 @@ namespace UnityS.Transforms
                 LocalToWorldTypeHandle = GetComponentTypeHandle<LocalToWorld>(false),
                 LastSystemVersion = LastSystemVersion
             };
-            trsToLocalToWorldJob.ScheduleParallel(m_Group);
+            trsToLocalToWorldJob.ScheduleParallel(m_Group).Complete();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace UnityS.Transforms
     // (or) LocalToWorld = Translation * CompositeRotation * Scale
     // (or) LocalToWorld = Translation * Rotation * CompositeScale
     // (or) LocalToWorld = Translation * CompositeRotation * CompositeScale
-    public abstract class TRSToLocalToWorldSystem : JobComponentSystem
+    public abstract partial class TRSToLocalToWorldSystem : SystemBase
     {
         private EntityQuery m_Group;
 
@@ -258,28 +258,20 @@ namespace UnityS.Transforms
             });
         }
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnUpdate()
         {
-            var rotationType = GetComponentTypeHandle<Rotation>(true);
-            var compositeRotationType = GetComponentTypeHandle<CompositeRotation>(true);
-            var translationType = GetComponentTypeHandle<Translation>(true);
-            var nonUniformScaleType = GetComponentTypeHandle<NonUniformScale>(true);
-            var scaleType = GetComponentTypeHandle<Scale>(true);
-            var compositeScaleType = GetComponentTypeHandle<CompositeScale>(true);
-            var localToWorldType = GetComponentTypeHandle<LocalToWorld>(false);
             var trsToLocalToWorldJob = new TRSToLocalToWorld()
             {
-                RotationTypeHandle = rotationType,
-                CompositeRotationTypeHandle = compositeRotationType,
-                TranslationTypeHandle = translationType,
-                ScaleTypeHandle = scaleType,
-                NonUniformScaleTypeHandle = nonUniformScaleType,
-                CompositeScaleTypeHandle = compositeScaleType,
-                LocalToWorldTypeHandle = localToWorldType,
+                RotationTypeHandle = GetComponentTypeHandle<Rotation>(true),
+                CompositeRotationTypeHandle = GetComponentTypeHandle<CompositeRotation>(true),
+                TranslationTypeHandle = GetComponentTypeHandle<Translation>(true),
+                ScaleTypeHandle = GetComponentTypeHandle<Scale>(true),
+                NonUniformScaleTypeHandle = GetComponentTypeHandle<NonUniformScale>(true),
+                CompositeScaleTypeHandle = GetComponentTypeHandle<CompositeScale>(true),
+                LocalToWorldTypeHandle = GetComponentTypeHandle<LocalToWorld>(false),
                 LastSystemVersion = LastSystemVersion
             };
-            var trsToLocalToWorldJobHandle = trsToLocalToWorldJob.Schedule(m_Group, inputDeps);
-            return trsToLocalToWorldJobHandle;
+            trsToLocalToWorldJob.ScheduleParallel(m_Group);
         }
     }
 }

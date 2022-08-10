@@ -14,7 +14,7 @@ namespace UnityS.Physics.GraphicsIntegration
     /// </summary>
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(ExportPhysicsWorld))]
-    public class CopyPhysicsVelocityToSmoothing : SystemBase, IPhysicsSystem
+    public partial class CopyPhysicsVelocityToSmoothing : SystemBase, IPhysicsSystem
     {
         JobHandle m_InputDependency;
         JobHandle m_OutputDependency;

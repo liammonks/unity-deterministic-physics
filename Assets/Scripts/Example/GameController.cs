@@ -7,7 +7,7 @@ using UnityS.Physics;
 using UnityS.Physics.Systems;
 using UnityS.Transforms;
 
-public class GameController : SystemBase
+public partial class GameController : SystemBase
 {
     public static GameController Instance;
 
@@ -21,6 +21,7 @@ public class GameController : SystemBase
         base.OnCreate();
         Instance = this;
         UnityEngine.Physics.autoSimulation = false;
+        UnityEngine.Physics2D.simulationMode = SimulationMode2D.Script;
 
         matPropBlock = new MaterialPropertyBlock();
 
@@ -228,7 +229,7 @@ public class GameController : SystemBase
 
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 [UpdateBefore(typeof(BuildPhysicsWorld))]
-class PhysicsController : SystemBase
+partial class PhysicsController : SystemBase
 {
     private int frame = 0;
 

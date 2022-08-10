@@ -14,7 +14,7 @@ namespace UnityS.Physics.Systems
     // and a joint for every entity which has a joint component.
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [AlwaysUpdateSystem]
-    public class BuildPhysicsWorld : SystemBase, IPhysicsSystem
+    public partial class BuildPhysicsWorld : SystemBase, IPhysicsSystem
     {
         private JobHandle m_InputDependencyToComplete;
         private JobHandle m_InputDependency;
@@ -34,7 +34,7 @@ namespace UnityS.Physics.Systems
         StepPhysicsWorld m_StepPhysicsWorldSystem;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-        internal NativeHashMap<uint, long> IntegrityCheckMap = new NativeHashMap<uint, long>(4, Allocator.Persistent);
+        internal NativeParallelHashMap<uint, long> IntegrityCheckMap = new NativeParallelHashMap<uint, long>(4, Allocator.Persistent);
 #endif
 
         protected override void OnCreate()
@@ -371,7 +371,7 @@ namespace UnityS.Physics.Systems
                 public int BodyIndex;
 
                 [NativeDisableContainerSafetyRestriction]
-                public NativeHashMap<Entity, int>.ParallelWriter EntityBodyIndexMap;
+                public NativeParallelHashMap<Entity, int>.ParallelWriter EntityBodyIndexMap;
 
                 public void Execute()
                 {
@@ -399,7 +399,7 @@ namespace UnityS.Physics.Systems
                 [ReadOnly] public int FirstBodyIndex;
 
                 [NativeDisableContainerSafetyRestriction] public NativeArray<RigidBody> RigidBodies;
-                [NativeDisableContainerSafetyRestriction] public NativeHashMap<Entity, int>.ParallelWriter EntityBodyIndexMap;
+                [NativeDisableContainerSafetyRestriction] public NativeParallelHashMap<Entity, int>.ParallelWriter EntityBodyIndexMap;
 
                 //public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
                 public void Execute(ArchetypeChunk batchInChunk, int batchIndex, int firstEntityIndex)
@@ -564,10 +564,10 @@ namespace UnityS.Physics.Systems
                 [ReadOnly] public EntityTypeHandle EntityType;
                 [ReadOnly] public NativeArray<RigidBody> RigidBodies;
                 [ReadOnly] public int NumDynamicBodies;
-                [ReadOnly] public NativeHashMap<Entity, int> EntityBodyIndexMap;
+                [ReadOnly] public NativeParallelHashMap<Entity, int> EntityBodyIndexMap;
 
                 [NativeDisableParallelForRestriction] public NativeArray<Joint> Joints;
-                [NativeDisableParallelForRestriction] public NativeHashMap<Entity, int>.ParallelWriter EntityJointIndexMap;
+                [NativeDisableParallelForRestriction] public NativeParallelHashMap<Entity, int>.ParallelWriter EntityJointIndexMap;
 
                 public int DefaultStaticBodyIndex;
 
@@ -638,9 +638,9 @@ namespace UnityS.Physics.Systems
                 [ReadOnly] public ComponentTypeHandle<PhysicsVelocity> PhysicsVelocityType;
                 [ReadOnly] public ComponentTypeHandle<PhysicsCollider> PhysicsColliderType;
 
-                public NativeHashMap<uint, long> IntegrityCheckMap;
+                public NativeParallelHashMap<uint, long> IntegrityCheckMap;
 
-                internal static void AddOrIncrement(NativeHashMap<uint, long> integrityCheckMap, uint systemVersion)
+                internal static void AddOrIncrement(NativeParallelHashMap<uint, long> integrityCheckMap, uint systemVersion)
                 {
                     if (integrityCheckMap.TryGetValue(systemVersion, out long occurences))
                     {
@@ -676,7 +676,7 @@ namespace UnityS.Physics.Systems
             internal struct RecordColliderIntegrity : IJobEntityBatch
             {
                 [ReadOnly] public ComponentTypeHandle<PhysicsCollider> PhysicsColliderType;
-                public NativeHashMap<uint, long> IntegrityCheckMap;
+                public NativeParallelHashMap<uint, long> IntegrityCheckMap;
 
                 public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
                 {
@@ -694,7 +694,7 @@ namespace UnityS.Physics.Systems
 
         #region Integrity checks
 
-        internal void RecordIntegrity(NativeHashMap<uint, long> integrityCheckMap)
+        internal void RecordIntegrity(NativeParallelHashMap<uint, long> integrityCheckMap)
         {
             var positionType = GetComponentTypeHandle<Translation>(true);
             var rotationType = GetComponentTypeHandle<Rotation>(true);

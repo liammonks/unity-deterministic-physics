@@ -7,7 +7,7 @@ namespace UnityS.Physics.Systems
     // so that any system which depends on all physics work to be finished can just depend on this single handle.
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(BuildPhysicsWorld)), UpdateAfter(typeof(StepPhysicsWorld)), UpdateAfter(typeof(ExportPhysicsWorld))]
-    public class EndFramePhysicsSystem : SystemBase, IPhysicsSystem
+    public partial class EndFramePhysicsSystem : SystemBase, IPhysicsSystem
     {
         private JobHandle m_InputDependency;
         private JobHandle m_OutputDependency;

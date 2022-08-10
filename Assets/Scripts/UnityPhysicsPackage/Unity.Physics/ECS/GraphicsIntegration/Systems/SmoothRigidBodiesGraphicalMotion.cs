@@ -14,7 +14,7 @@ namespace UnityS.Physics.GraphicsIntegration
     /// </summary>
     [UpdateInGroup(typeof(TransformSystemGroup))]
     [UpdateBefore(typeof(EndFrameTRSToLocalToWorldSystem))]
-    public class SmoothRigidBodiesGraphicalMotion : SystemBase, IPhysicsSystem
+    public partial class SmoothRigidBodiesGraphicalMotion : SystemBase, IPhysicsSystem
     {
         JobHandle m_InputDependency;
         JobHandle m_OutputDependency;

@@ -22,7 +22,7 @@ namespace UnityS.Physics.GraphicsIntegration
     /// </summary>
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(ExportPhysicsWorld))]
-    public class BufferInterpolatedRigidBodiesMotion : SystemBase, IPhysicsSystem
+    public partial class BufferInterpolatedRigidBodiesMotion : SystemBase, IPhysicsSystem
     {
         JobHandle m_InputDependency;
         JobHandle m_OutputDependency;

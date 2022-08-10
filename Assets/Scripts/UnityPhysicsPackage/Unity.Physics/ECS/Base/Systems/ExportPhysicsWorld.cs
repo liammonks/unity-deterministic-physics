@@ -12,7 +12,7 @@ namespace UnityS.Physics.Systems
     // A system which copies transforms and velocities from the physics world back to the original entity components.
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(StepPhysicsWorld)), UpdateBefore(typeof(EndFramePhysicsSystem))]
-    public class ExportPhysicsWorld : SystemBase, IPhysicsSystem
+    public partial class ExportPhysicsWorld : SystemBase, IPhysicsSystem
     {
         private JobHandle m_InputDependency;
         private JobHandle m_OutputDependency;
@@ -181,7 +181,7 @@ namespace UnityS.Physics.Systems
 
         #region Integrity checks
 
-        internal JobHandle CheckIntegrity(JobHandle inputDeps, NativeHashMap<uint, long> integrityCheckMap)
+        internal JobHandle CheckIntegrity(JobHandle inputDeps, NativeParallelHashMap<uint, long> integrityCheckMap)
         {
             var positionType = GetComponentTypeHandle<Translation>(true);
             var rotationType = GetComponentTypeHandle<Rotation>(true);
@@ -222,9 +222,9 @@ namespace UnityS.Physics.Systems
             [ReadOnly] public ComponentTypeHandle<Rotation> RotationType;
             [ReadOnly] public ComponentTypeHandle<PhysicsVelocity> PhysicsVelocityType;
             [ReadOnly] public ComponentTypeHandle<PhysicsCollider> PhysicsColliderType;
-            public NativeHashMap<uint, long> IntegrityCheckMap;
+            public NativeParallelHashMap<uint, long> IntegrityCheckMap;
 
-            internal static void DecrementIfExists(NativeHashMap<uint, long> integrityCheckMap, uint systemVersion)
+            internal static void DecrementIfExists(NativeParallelHashMap<uint, long> integrityCheckMap, uint systemVersion)
             {
                 if (integrityCheckMap.TryGetValue(systemVersion, out long occurences))
                 {
@@ -259,7 +259,7 @@ namespace UnityS.Physics.Systems
         internal struct CheckColliderIntegrity : IJobEntityBatch
         {
             [ReadOnly] public ComponentTypeHandle<PhysicsCollider> PhysicsColliderType;
-            public NativeHashMap<uint, long> IntegrityCheckMap;
+            public NativeParallelHashMap<uint, long> IntegrityCheckMap;
 
             public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
@@ -276,7 +276,7 @@ namespace UnityS.Physics.Systems
         [BurstCompile]
         internal struct CheckTotalIntegrity : IJob
         {
-            public NativeHashMap<uint, long> IntegrityCheckMap;
+            public NativeParallelHashMap<uint, long> IntegrityCheckMap;
             public void Execute()
             {
                 var values = IntegrityCheckMap.GetValueArray(Allocator.Temp);

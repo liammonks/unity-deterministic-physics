@@ -8,7 +8,7 @@ namespace UnityS.Physics.Systems
     // Simulates the physics world forwards in time
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(ExportPhysicsWorld)), AlwaysUpdateSystem]
-    public class StepPhysicsWorld : SystemBase, IPhysicsSystem
+    public partial class StepPhysicsWorld : SystemBase, IPhysicsSystem
     {
         private JobHandle m_InputDependency;
         private JobHandle m_OutputDependency;

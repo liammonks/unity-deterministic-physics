@@ -8,7 +8,7 @@ using UnityS.Mathematics;
 
 namespace UnityS.Transforms
 {
-    public abstract class LocalToParentSystem : JobComponentSystem
+    public abstract partial class LocalToParentSystem : SystemBase
     {
         private EntityQuery m_RootsGroup;
         private EntityQueryMask m_LocalToWorldWriteGroupMask;
@@ -103,26 +103,19 @@ namespace UnityS.Transforms
             }));
         }
 
-        protected override JobHandle OnUpdate(JobHandle inputDeps)
+        protected override void OnUpdate()
         {
-            var localToWorldType = GetComponentTypeHandle<LocalToWorld>(true);
-            var childType = GetBufferTypeHandle<Child>(true);
-            var childFromEntity = GetBufferFromEntity<Child>(true);
-            var localToParentFromEntity = GetComponentDataFromEntity<LocalToParent>(true);
-            var localToWorldFromEntity = GetComponentDataFromEntity<LocalToWorld>();
-
             var updateHierarchyJob = new UpdateHierarchy
             {
-                LocalToWorldTypeHandle = localToWorldType,
-                ChildTypeHandle = childType,
-                ChildFromEntity = childFromEntity,
-                LocalToParentFromEntity = localToParentFromEntity,
-                LocalToWorldFromEntity = localToWorldFromEntity,
+                LocalToWorldTypeHandle = GetComponentTypeHandle<LocalToWorld>(true),
+                ChildTypeHandle = GetBufferTypeHandle<Child>(true),
+                ChildFromEntity = GetBufferFromEntity<Child>(true),
+                LocalToParentFromEntity = GetComponentDataFromEntity<LocalToParent>(true),
+                LocalToWorldFromEntity = GetComponentDataFromEntity<LocalToWorld>(),
                 LocalToWorldWriteGroupMask = m_LocalToWorldWriteGroupMask,
                 LastSystemVersion = LastSystemVersion
             };
-            var updateHierarchyJobHandle = updateHierarchyJob.Schedule(m_RootsGroup, inputDeps);
-            return updateHierarchyJobHandle;
+            updateHierarchyJob.ScheduleParallel(m_RootsGroup);
         }
     }
 }
